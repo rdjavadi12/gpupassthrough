@@ -1,0 +1,11 @@
+---
+##### Before running this please insure IOMMU is enabled in UEFI
+#####  Run dnf update on target system prior to running this playbook
+##### For best results install windows 10 on a seperate SSD and use the latest VirtIO drivers
+##### Also Look into CPU pinning for your model CPU
+##### If you are using to Identical GPUS you will have to do some additional setup
+- name: Prep for gpu passthrough
+  hosts: all
+  roles:
+
+    - common

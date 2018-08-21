@@ -1,0 +1,5 @@
+###replace target ip with your target ip
+
+192.168.122.196 ansible_connection=ssh ansible_user=root ansible_ssh_pass=
+
+##remove ansible_ssh_pass and setup keybased ssh and disable password authentication in /etc/ssh/sshd_config

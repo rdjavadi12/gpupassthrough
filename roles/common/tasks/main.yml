@@ -1,0 +1,63 @@
+---
+
+
+
+- name : Install all virtualization packages
+  dnf:
+    name: '@virtualization'
+    state: present
+
+#### Intel kernel flags are different amd_iommu=on must be changed to intel_iommu=on
+
+- name: edit grub
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="iommu=1 amd_iommu=on rd.driver.pre=vfio-pci"'
+  register: grubfile
+
+## UEFI ##
+- name: update grub
+  command: grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+## BIOS ##
+# grub2-mkconfig -o /boot/grub2/grub.cfg
+
+- name: make vfio file
+  shell: touch /etc/modprobe.d/vfio.conf
+
+- name: add gpu ids to vfio conf
+  lineinfile:
+    dest: /etc/modprobe.d/vfio.conf
+    line: options vfio-pci ids={{ gpu_vid }},{{ gpu_audio }}
+
+- name: make local.conf
+  shell: touch /etc/dracut.conf.d/local.conf
+
+- name: insure vfio drivers get loaded
+  lineinfile:
+    dest: /etc/dracut.conf.d/local.conf
+    line: add_drivers+="vfio vfio_iommu_type1 vfio_pci vfio_virqfd"
+
+- name: dracut update
+  shell: dracut -f --kver `uname -r`
+
+- name: reboot host
+  shell: sleep 2 && /sbin/shutdown -r now
+  async: 1
+  poll: 0
+
+- name: wait for reboot to complete
+  wait_for_connection:
+    delay: 60
+    timeout: 300
+
+- name: define vm
+  virt:
+      name: winbox
+      command: define
+      xml: "{{ lookup('template', 'winbox.xml.j2') }}"
+
+#- name: start vm
+#  virt:
+#      name: winbox
+#      state: running
