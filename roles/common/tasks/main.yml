@@ -1,11 +1,13 @@
 ---
 
-
-
-- name : Install all virtualization packages
+- name : Install all packages
   dnf:
-    name: '@virtualization'
+    name: {{ item }}
     state: present
+  with_items:
+    - {{ virt }}
+  #  - {{ var1 }}  fill in with package variables specified in /roles/common/vars/main.yml
+  #  - {{ var2 }}
 
 #### Intel kernel flags are different amd_iommu=on must be changed to intel_iommu=on
 
@@ -41,21 +43,23 @@
 - name: dracut update
   shell: dracut -f --kver `uname -r`
 
-- name: reboot host
-  shell: sleep 2 && /sbin/shutdown -r now
-  async: 1
-  poll: 0
-
-- name: wait for reboot to complete
-  wait_for_connection:
-    delay: 60
-    timeout: 300
-
 - name: define vm
   virt:
       name: winbox
       command: define
       xml: "{{ lookup('template', 'winbox.xml.j2') }}"
+
+- name: reboot host
+  shell: sleep 2 && /sbin/shutdown -r now
+  async: 1
+  poll: 0
+
+#- name: wait for reboot to complete
+#  wait_for_connection:
+#    delay: 60
+#    timeout: 300
+
+
 
 #- name: start vm
 #  virt:
