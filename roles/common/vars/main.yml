@@ -14,9 +14,10 @@ drive : /dev/sdb
 
 #packages to Install
 
-virt : '@virtualization'
+virt : "@virtualization"
+
 
 # var1 : some package
 # var2 : another package
 # var3 : some other package
-#doesn't have to be in ' ' only if it starts with a symbol
+#doesn't have to be in " " only if it starts with a symbol

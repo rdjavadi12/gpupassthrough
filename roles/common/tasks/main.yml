@@ -2,12 +2,12 @@
 
 - name : Install all packages
   dnf:
-    name: {{ item }}
+    name: "{{ item }}"
     state: present
   with_items:
-    - {{ virt }}
-  #  - {{ var1 }}  fill in with package variables specified in /roles/common/vars/main.yml
-  #  - {{ var2 }}
+     - "{{ virt }}"
+  #  - {{ variable1 }} fill in with package variables specified in /roles/common/vars/main.yml
+  #  - {{ Vaiable2 }}
 
 #### Intel kernel flags are different amd_iommu=on must be changed to intel_iommu=on
 
